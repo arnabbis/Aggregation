@@ -4,6 +4,7 @@ const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
         minlength: 2,
         maxlength: 100
     },
@@ -31,6 +32,15 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    dateOfManufacture: {
+        type: String,
+        required: true
+    },
+    expiryDate: {
+        type: String,
+        required: true
+    },
+
     reviews: [
         {
             user: String,
