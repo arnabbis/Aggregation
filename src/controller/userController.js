@@ -1,7 +1,7 @@
 const express = require('express');
 const userModel = require('../model/userModel');
 const mongodb = require("mongoose");
-
+const ObjectId = mongodb.Types.ObjectId;
 
 exports.createUser = async (req, res) => {
     const { name, email, password, mobile, isAdmin } = req.body;
@@ -64,6 +64,25 @@ exports.getAllAdmin = async (req, res) => {
         }
     ])
     return res.status(200).send({message:"All Admins",data:result});
+}catch(err){
+    console.log(err);
+    return res.status(500).send(err.message);
+}
+}
+
+exports.findUserById = async (req, res) => {
+    const {id} = req.params;
+    try{
+    const result = await userModel.aggregate([{
+        $match:{
+            _id: new ObjectId(id)
+        }
+    }])
+    if(result.length==0){
+        return res.status(400).send({message:"User not found"});
+    }
+    console.log(result);
+    return res.status(200).send({message:"User found",data:result});
 }catch(err){
     console.log(err);
     return res.status(500).send(err.message);
