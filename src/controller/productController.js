@@ -38,3 +38,47 @@ exports.createProduct = async (req, res) => {
         return res.status(500).send(err.message);
     }
 }
+
+
+
+exports.getAllProductsbyCategory = async (req, res) => {
+    const category = req.query.category;
+    try {
+
+        const result = await productModel.aggregate([{
+            $match: { category: category }
+        },
+        {
+            $sort: { createdAt: -1 }
+        }
+        ]);
+        if (result.length == 0) {
+            return res.status(400).send({ message: "No products found with this category" });
+        }
+        return res.status(200).send({ message: "All products", data: result });
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
+
+
+
+exports.getProductByPrice = async (req, res) => {
+    const startingPrice = parseInt(req.query.startingPrice);
+    const endingPrice = parseInt(req.query.endingPrice);
+    try {
+        const result = await productModel.aggregate([
+            {
+                $match: {
+                    price: {
+                        $gte: startingPrice,
+                        $lte: endingPrice
+                    }
+                }
+            }
+        ]);
+        return res.status(200).send({ message: "All products", data: result });
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
